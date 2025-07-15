@@ -42,4 +42,7 @@ export default [
   layout("routes/user/user-layout.tsx", [
     route("user/profile", "routes/user/profile.tsx"),
   ]),
+
+  route("achieved", "routes/achieved.tsx"),
+  route("settings", "routes/settings.tsx"),
 ] satisfies RouteConfig;
