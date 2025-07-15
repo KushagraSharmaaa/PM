@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: ["http://localhost:3000", "http://localhost:5173", "http://192.168.29.235:5173"],
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

@@ -19,7 +19,16 @@ const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const workspaceId = searchParams.get("workspaceId");
 
-  const { data, isPending } = useGetWorkspaceStatsQuery(workspaceId!) as {
+  if (!workspaceId) {
+    return (
+      <div>
+        <h2 className="text-xl font-bold text-red-500">No workspace selected.</h2>
+        <p>Please select or create a workspace to view the dashboard.</p>
+      </div>
+    );
+  }
+
+  const { data, isPending } = useGetWorkspaceStatsQuery(workspaceId) as {
     data: {
       stats: StatsCardProps;
       taskTrendsData: TaskTrendsData[];
@@ -36,6 +45,15 @@ const Dashboard = () => {
     return (
       <div>
         <Loader />
+      </div>
+    );
+  }
+
+  if (!data || !data.stats) {
+    return (
+      <div>
+        <h2 className="text-xl font-bold text-red-500">Failed to load dashboard data.</h2>
+        <p>Please make sure you have access to this workspace and try again.</p>
       </div>
     );
   }

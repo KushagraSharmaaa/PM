@@ -20,9 +20,44 @@ const registerUser = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email address already in use",
-      });
+      if (!existingUser.isEmailVerified) {
+        // Resend verification email
+        const verificationToken = jwt.sign(
+          { userId: existingUser._id, purpose: "email-verification" },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        );
+
+        await Verification.findOneAndUpdate(
+          { userId: existingUser._id },
+          {
+            userId: existingUser._id,
+            token: verificationToken,
+            expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
+          },
+          { upsert: true }
+        );
+
+        const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+        const emailBody = `<p>Click <a href="${verificationLink}">here</a> to verify your email</p>`;
+        const emailSubject = "Verify your email";
+
+        const isEmailSent = await sendEmail(email, emailSubject, emailBody);
+
+        if (!isEmailSent) {
+          return res.status(500).json({
+            message: "Failed to send verification email",
+          });
+        }
+
+        return res.status(200).json({
+          message: "Verification email resent. Please check your email.",
+        });
+      } else {
+        return res.status(400).json({
+          message: "Email address already in use",
+        });
+      }
     }
 
     const salt = await bcrypt.genSalt(10);

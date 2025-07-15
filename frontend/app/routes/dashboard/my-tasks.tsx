@@ -116,9 +116,8 @@ const MyTasks = () => {
         <h1 className="text-2xl font-bold">My Tasks</h1>
 
         <div
-          className="flex flex-col items-start md:flex-row md"
+          className="flex flex-col items-start md:flex-row gap-2"
           itemScope
-          gap-2
         >
           <Button
             variant={"outline"}
